@@ -10,6 +10,7 @@ import deliveryService from '../services/delivery';
 
 import { ISearch } from '../../interfaces/app/search';
 import { ProductInStock } from '../model/Stock';
+import mongoose from 'mongoose';
 
 class deliveryController {
   public async listAllDelivery(req: Request, res: Response): Promise<void> {
@@ -44,24 +45,39 @@ class deliveryController {
     }
   }
 
-  
+
   public async saveDelivery(req: Request, res: Response): Promise<void> {
     try {
       const verifyDelivery = await deliveryService.verifyDelivery(req.body.product);
+
       if (verifyDelivery) {
         res
           .status(409)
           .json({ error: 'Esse pedido já foi feito. Experimente outro' });
       } else {
-        
-      const deliveryDetails = req.body;
-      
-      const delivery = (await deliveryService.saveDelivery(
-        deliveryDetails
-      )) as IDelivery;
 
-      await this.updateStock(deliveryDetails.products);
-  
+        const deliveryDetails = req.body;
+
+        
+        const stockItem = await ProductInStock.findOne({ 'product.productId': deliveryDetails.product });
+        
+        const dataStock = stockItem?.product;
+
+        const prod = dataStock?.find(item => item.productId.toString() === delivery.product.toString());
+
+        // Verifica se o produto foi encontrado
+        if (prod) {
+          prod.productQuantity -= deliveryDetails.deliveryQuantity;
+        } else {
+            // O produto não foi encontrado
+            console.log('Produto não encontrado.');
+        }
+
+        const delivery = (await deliveryService.saveDelivery(
+          deliveryDetails
+        )) as IDelivery;
+
+ 
         const datadelivery = {
           deliveryName: delivery.product,
           id: delivery._id,
@@ -71,25 +87,11 @@ class deliveryController {
           .status(201)
           .json({ success: 'Cadastro feito  com sucesso', ...datadelivery });
       }
-    } catch (error) {
-      res.status(500).send({ message: error });
-    }
-  }
 
-
-  public async updateStock(products: IDelivery[]) {
-    try {
-      for (const productuStock of products) {
-        const stockItem = await ProductInStock.findOne({ productId: productuStock.product._id });
-        if (!stockItem) {
-          throw new Error('Produto não encontrado no estoque.');
-        }
-        stockItem.product.productQuantity -= productuStock.product.deliveryQuantity;
-        await stockItem.save();
+      } catch (error) {
+        res.status(500).send({ message: error });
       }
-    } catch (error) {
-      throw new Error('Erro ao atualizar estoque.');
-    }
+    
   }
 
   public async updateDelivery(req: Request, res: Response): Promise<void> {

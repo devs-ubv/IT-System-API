@@ -11,7 +11,7 @@ import ProductService from '../services/product';
 
 import { ISearch } from '../../interfaces/app/search';
 import { deleteFileInDataBase } from '../../util/deleteFile';
-import { promises } from 'dns';
+
 
 class ProductController {
   public async listAllproduct(req: Request, res: Response): Promise<void> {

@@ -59,10 +59,11 @@ export interface IStockProduct{
 }
 
 export interface IDelivery {
-  _id: string;
+  _id: string | any;
   deliveredBy: IUser;
   receivedBy: IUser;
   beneficiary: IUser;
+  deliveryQuantity: number;
   product:  IProductInStock & { deliveryQuantity: number }; 
   deliveryDate: Date;
   additionalAccessorie: IAdditionalAccessorie[];

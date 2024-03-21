@@ -4,7 +4,6 @@ import { ISearch } from '../../interfaces/app/search';
 import { deleteFileInDataBase } from '../../util/deleteFile';
 import { IProductInStock } from '../../interfaces/ProdutosInterface';
 import { fetchAllDataProductStock, responseDataProductStock } from '../../util/dataFetching/productStock';
-import { fetchOrganizeProductData } from '../../util/functionshelp';
 
 class StockController {
   public async listAllProductInStock(req: Request, res: Response): Promise<void> {

@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcrypt';
 import { Product } from '../model/Product';
-import { IUser, IUserRegister } from '../../interfaces/UserInterface';
 import { handleMongoError } from '../../util/errors/api-error';
 import { ISearch } from '../../interfaces/app/search';
 import { IProduct } from '../../interfaces/ProdutosInterface';
